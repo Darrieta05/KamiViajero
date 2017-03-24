@@ -1,0 +1,16 @@
+* {
+  text-align: center; }
+
+body {
+  width: 100%;
+  align-content: center;
+  font: 100% Helvetica, sans-serif;
+  color: #333; }
+
+h1 {
+  color: #369;
+  fontfamily: Helvetica, sans-serif;
+  fontsize: 250%; }
+
+p {
+  color: #d7a203; }
