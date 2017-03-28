@@ -1,7 +1,14 @@
-import {Transporte} from '.trasnporte';
+import {Transporte} from './transporte';
 
-export Class Punto {
+export class Punto {
   id: number;
   nombre: string;
-  Tansportes: transporte[];
+  transportes?: Transporte;
+
+  constructor(
+    id: number,
+    nombre: string,
+    transportes?: Transporte){}
+
+
 }

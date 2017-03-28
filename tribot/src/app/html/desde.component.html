@@ -1,0 +1,15 @@
+<div class="container">
+  <div class="row">
+    <div class="form-group formulario col-lg-4" >
+      <label for="punto">Punto de partida</label>
+      <select class="form-control" id="puntodesde" required [(ngModel)]="selectedPunto" name="selectedPunto">
+        <option *ngFor="let punto of puntos">{{punto.nombre}}</option>
+      </select>
+      <p class="formulario">El punto de partida es: {{selectedPunto}} </p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf='selectedPunto'>
+  <h1>Acá va la parte de Hasta</h1>
+</div>

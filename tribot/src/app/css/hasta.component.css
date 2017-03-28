@@ -20,5 +20,6 @@ p {
 h3 {
   color: #d68e2f; }
 
-div {
-  background-color: transparent; }
+.formulario {
+  text-align: left;
+  margin: 2%; }

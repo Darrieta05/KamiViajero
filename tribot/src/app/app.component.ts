@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,7 @@ import { Component } from '@angular/core';
 })
 
 export class AppComponent {
-  title = 'Kami Viajero';
-  desc = 'Ocupas saber la ruta más rápida? Kami viajero';
+  title = 'TRIBOT COSTA RICA';
+  desc = 'Ocupas saber la ruta más rápida? TriBot';
   desc2 = 'Hotel? Trivago';
 }
