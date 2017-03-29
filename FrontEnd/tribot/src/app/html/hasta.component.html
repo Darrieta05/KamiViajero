@@ -2,16 +2,13 @@
   <div class="row">
     <div class="form-group formulario col-lg-4" >
       <label for="punto">Punto de partida</label>
-      <select class="form-control" id="puntodesde" required [(ngModel)]="punto" name="punto">
+      <select class="form-control" id="puntodesde" required [(ngModel)]="selectedPunto" name="punto">
         <option *ngFor="let punto of puntos" value={{punto.id}}>{{punto.nombre}}</option>
       </select>
     </div>
   </div>
 </div>
-{{punto}}
 
-<h2>{{selectedPunto.nombre}}</h2>
 <div *ngIf='selectedPunto'>
-  <h1>Acá va la parte de Hasta</h1>
-  <h2>{{selectedPunto.nombre}}</h2>
+  <h1>Acá va la parte de Transporte</h1>
 </div>
