@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import 'rxjs/Rx';
+
+import {AppService} from './app.service'
 
 import {Punto} from './punto'
-import {PUNTOS} from './mock-puntos'
 
 @Component({
   selector: 'hasta',
@@ -10,27 +12,33 @@ import {PUNTOS} from './mock-puntos'
 })
 
 export class HastaComponent {
-  puntos = PUNTOS;
+  public puntos;
+
+  @Input()
+  puntoout: string = 'yep';
+
+  @Output('cambio')
+  change: EventEmitter<string> = new EventEmitter<string>();
+
+
+  constructor(private _appService: AppService){
+  }
+
+  profile = {};
+
+  ngOnInit(){
+    this.loadUser();
+  }
+
+  loadUser() {
+    this._appService.getPuntos().subscribe(data => this.profile = data);
+  }
 
   selectedPunto: Punto;
 
-  model = new Punto(4, 'Escazú', {tren: false, taxi: true, avion: false, bus: false});
-
-
-  onSelect(punto: Punto): void{
-    this.selectedPunto = punto;
+  onSubmit() {
+    this.change.emit(this.puntoout)
   }
 
-  ngOnInit(){
-    
-  }
-
-  submitted = false;
-
-  onSubmit() { this.submitted = true; }
-
-  get diagnostic() {
-    return JSON.stringify(this.model);
-  }
 
 }

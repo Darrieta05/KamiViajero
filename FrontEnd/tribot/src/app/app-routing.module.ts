@@ -8,10 +8,8 @@ import {RegisterComponent} from './register.component';
 import {PageNotFoundComponent} from './not-found.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/desde', pathMatch: 'full'},
   {path: 'desde', component: DesdeComponent},
   {path: 'hasta', component: HastaComponent},
-  {path: '**', component: PageNotFoundComponent},
   {path: 'login', component: LogInComponent},
   {path: 'register', component: RegisterComponent}
 ]

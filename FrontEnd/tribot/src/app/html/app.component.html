@@ -14,13 +14,19 @@
   </div>
   <div class="row">
     <div class="col col-md-4">
-      <desde [puntoin]="puntoPartida"></desde>
+      <desde [puntoin]="puntoPartida" (cambio)="cambiaPartida($event)"></desde>
     </div>
-    {{puntoPartida}}
     <div *ngIf="puntoPartida" class="col col-md-4">
-      <hasta></hasta>
+      <hasta [puntoout]="puntoDestino" (cambio)="cambiaDestino($event)"></hasta>
     </div>
-    <div class="col col-md-4">
+    <div *ngIf="puntoDestino" class="col col-md-4">
+      <p>
+        El punto de partida es: {{puntoPartida}}
+      </p>
+      <p>
+        El punto de destino es: {{puntoDestino}}
+      </p>
+      <button (click)="checkTransporte()" type="button" name="button">Buscar Transporte Disponible</button>
     </div>
   </div>
 </div>

@@ -1,6 +1,9 @@
-<div class="form-group formulario col-4">
-  <label for="punto">Punto de destino</label>
-  <select class="form-control" id="puntodesde" required [(ngModel)]="selectedPunto" name="punto">
-    <option *ngFor="let punto of puntos" value={{punto.id}}>{{punto.nombre}}</option>
-  </select>
+<div *ngIf="profile.films" class="row">
+  <div class="form-group formulario col-4">
+    <label for="puntoout">Punto de destino</label>
+    <select (change)="onSubmit()" class="form-control" id="puntohasta" required [(ngModel)]="puntoout" name="puntoout">
+      <option *ngFor="let film of profile.films">{{film}}</option>
+    </select>
+    <p class="formulario">El punto de partida es: {{puntoout}} </p>
+  </div>
 </div>
