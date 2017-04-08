@@ -21,6 +21,10 @@ export class HastaComponent {
     this.selectedPunto = punto;
   }
 
+  ngOnInit(){
+    
+  }
+
   submitted = false;
 
   onSubmit() { this.submitted = true; }

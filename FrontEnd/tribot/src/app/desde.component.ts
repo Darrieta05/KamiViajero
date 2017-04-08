@@ -1,4 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {AppService} from './app.service';
+import 'rxjs/Rx';
 
 import {Punto} from './punto'
 import {PUNTOS} from './mock-puntos'
@@ -10,13 +12,45 @@ import {PUNTOS} from './mock-puntos'
 })
 
 export class DesdeComponent {
+  public puntos;
+  public puntos_error:Boolean = false;
+
+  @Input()
+  puntoin: string = 'yep';
+
+
+  constructor(private _appService: AppService){
+  }
+
+  profile = {};
+
+  loadUser() {
+    this._appService.getPuntos().subscribe(data => this.profile = data);
+  }
+
+  getPuntos() {
+    this._appService.getPuntos().subscribe(
+      data => { this.puntos = data},
+      err => { this.puntos_error = true }
+    );
+  }
+
+  getLista(){
+    this._appService.getLista()
+    .then(puntos => this.puntos);
+    console.log(this.puntos);
+  }
+
   clickMessage = '';
 
   onClickMe() {
     this.clickMessage = 'You are my hero!';
   }
-  
-  puntos = PUNTOS;
+
+  ngOnInit() {
+  //  this.getPuntos();
+  //  this.getLista();
+ }
 
   selectedPunto: Punto;
 

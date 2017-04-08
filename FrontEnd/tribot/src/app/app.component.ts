@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 
+import {Punto} from './punto';
+
 @Component({
   selector: 'app-root',
   templateUrl: './html/app.component.html',
@@ -11,4 +13,6 @@ export class AppComponent {
   title = 'TRIBOT COSTA RICA';
   desc = 'Ocupas saber la ruta más rápida? TriBot';
   desc2 = 'Hotel? Trivago';
+
+  puntoPartida: string = 'nope';
 }

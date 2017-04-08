@@ -1,7 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Lato);
 * {
-  text-align: center;
-  background-color: transparent; }
+  text-align: center; }
 
 body {
   width: 100%;
@@ -10,8 +9,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Lato", sans-serif;
-  font-size: 250%;
-  text-shadow: 1px 0.5px 1px; }
+  font-size: 250%; }
 
 p {
   font-family: "Lato", sans-serif;
@@ -19,3 +17,9 @@ p {
 
 h3 {
   color: #d68e2f; }
+
+.container {
+  margin-bottom: 2rem;
+  box-shadow: 2px 2px 1px #333331;
+  border: 2px solid #8e90f4;
+  border-radius: 30px; }

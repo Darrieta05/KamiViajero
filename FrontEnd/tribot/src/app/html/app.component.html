@@ -12,5 +12,15 @@
       {{desc2}}
     </p>
   </div>
+  <div class="row">
+    <div class="col col-md-4">
+      <desde [puntoin]="puntoPartida"></desde>
+    </div>
+    {{puntoPartida}}
+    <div *ngIf="puntoPartida" class="col col-md-4">
+      <hasta></hasta>
+    </div>
+    <div class="col col-md-4">
+    </div>
+  </div>
 </div>
-<router-outlet></router-outlet>
