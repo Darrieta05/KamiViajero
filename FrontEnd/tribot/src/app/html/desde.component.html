@@ -1,9 +1,8 @@
-<div *ngIf="profile.films" class="row">
+<div *ngIf="profile.films" class="row desde">
   <div class="form-group formulario col-4">
     <label for="puntoin">Punto de Partida</label>
     <select (change)="onSubmit()" class="form-control" id="puntodesde" required [(ngModel)]="puntoin" name="puntoin">
       <option *ngFor="let film of profile.films" value={{film}} >{{film}}</option>
     </select>
-    <p class="formulario">El punto de partida es: {{puntoin}} </p>
   </div>
 </div>
