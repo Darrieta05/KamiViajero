@@ -1,134 +1,141 @@
-from flask import Flask
-from flask import Flask, request, jsonify, json, Response
+from flask import Flask, json, Response, request,jsonify
+from flask_pymongo import PyMongo
+
+from BackEnd.Datos import transporte_datos as datos_transporte, algoritmo_dijkstra, viaje_datos as datos_viaje
 
 app = Flask(__name__)
 
-grafo = {'1': {'2': 67.2 , '3': 90},
-             '2': { '1': 67.2 , '3': 69.3 , '5': 28.6},
-             '3': { '1': 90 , '2': 69.3, '4': 58.4 , '5': 54.7},
-             '4': { '8': 83.8 ,  '3': 58.4 , '25': 116},
-             '5': { '2': 28.6 , '3': 54.7 , '6': 89.9},
-             '6': { '5': 89.9 , '7': 91.3 , '8': 111},
-             '7': { '6': 91.3 , '8': 113 , '9': 125 , '23': 106},
-             '8': { '4': 83.8 , '6': 111 , '7': 113 , '9': 157},
-             '9': { '7': 125 , '8': 157 , '10': 73.8, '24': 48.2},
-             '10':{ '9': 73.8, '11': 45.2 , '22': 80.9},
-             '11':{ '10': 45.2 , '12': 72.5, '13': 83.4, '24': 39},
-             '12':{ '11': 72.5, '13': 20 , '14': 55.4 },
-             '13':{ '11': 83.4, '12': 20 , '22': 152},
-             '14':{ '12': 55.4, '17': 99 , '18': 72.41},
-             '15':{ '16': 70 , '24': 174},
-             '16':{ '15': 70 , '17': 95 , '26': 190},
-             '17':{ '14': 99 , '16': 95 , '18': 60},
-             '18':{ '14': 72.41 , '17': 60 , '19': 121.32},
-             '19':{ '18': 121.32, '21': 39.80 , '26': 175.4},
-             '20':{ '21': 24.1},
-             '21':{ '19': 39.80,  '20': 24.1, '22': 176},
-             '22':{ '10': 80.9 , '13': 152 , '21': 176 , '23': 220},
-             '23':{ '7': 106 , '22': 220},
-             '24':{ '9': 48.2 , '11': 39 , '15': 174 , '25': 163},
-             '25':{ '4': 116 ,  '24': 163},
-             '26':{ '16': 190 , '19': 175.4}
-             }
+#conexión a la base de datos
+app.config['MONGO_DBNAME'] = 'tribot'
+app.config['MONGO_URI'] = 'mongodb://tribot:tribot@ds157390.mlab.com:57390/tribot'
 
-destinos = {'1': 'Parque Nacional Santa Rosa, Provincia de Guanacaste',
-            '3': 'Parque Nacional Palo Verde, Provincia de Guanacaste, Bagaces',
-            '2': 'Parque Nacional Rincón de la Vieja, Provincia de Guanacaste',
-            '4': 'Parque Nacional Barra Honda',
-            '5': 'Volcán Miravalles',
-            '6': 'Parque Nacional Volcán Tenorio ',
-            '7': 'Parque Nacional Volcán Arenal',
-            '8': 'Monteverde',
-            '9': 'Parque Nacional Volcán Poás',
-            '10': 'La Selva Biological Station',
-            '11': 'Parque Nacional Braulio Carrillo',
-            '12': 'Volcán Irazu',
-            '13': 'Parque Nacional Volcán Turrialba',
-            '14': 'Parque Nacional Tapantí -Macizo de la Muerte',
-            '15': 'Parque Nacional Manuel Antonio',
-            '16': 'Parque Nacional Marino Ballena',
-            '17': 'Parque Nacional Los Quetzales',
-            '18': 'Parque Nacional Chirripó',
-            '19': 'Parque Internacional La Amistad',
-            '20': 'Refugio Nacional Gandoca-Manzanillo',
-            '21': 'Parque Nacional Cahuita',
-            '22': 'Parque Nacional Tortuguero',
-            '23': 'Caño Negro Wildlife Refuge',
-            '24': 'San José',
-            '25': 'Montezuma',
-            '26': 'Parque nacional Corcovado'
-            }
+mongo = PyMongo(app)
 
-def dijkstra(grafo, inicio, destino, nodosVisitados=[], distancia={}, nodoAnterior={}):
+#guarda la consulta más reciente de una ruta
+info_temporal = {}
 
-    if inicio not in grafo:
-        return ('EL punto de partida no se encuentra registrado')
-    elif destino not in grafo:
-        return ('EL punto de destino no se encuentra registrado')
-    else:
+@app.route('/user',methods=['GET'])
+def user():
+    user = mongo.db.users
+    user.insert({'name':'John'})
+    return 'agregado'
 
-        if inicio == destino:
-            # una vez que el punto inicio sea igual al punto de destino, se recorre el diccionario con los nodos anteriores
-            # y se van guardando en la lista de la ruta
-            ruta = [] #guarda la ruta más corta
-            anterior = destino
-            while anterior != None:
-                ruta.append(anterior)
-                anterior = nodoAnterior.get(anterior, None)
+@app.route('/destinos',methods=['GET'])
+def destinos():
 
-            return ({'Ruta': (ruta[::-1]), 'Distancia': str(distancia[destino])})
+    resultado = json.dumps(datos_transporte.Info_Rutas.destinos)
+    respuesta = Response(resultado, status=200, mimetype='application/json')
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+    return respuesta
 
-        else:
-            # si inicio != destino, se ejecuta por primera vez, se inicializa la distancia en 0
-            if not nodosVisitados:
-                distancia[inicio] = 0
-
-            for nodoAdyacente in grafo[inicio]:
-                #se empieza a visitar a los nodos adyacentes al nodo inicial, si aún no han sido visitados
-                if nodoAdyacente not in nodosVisitados:
-                    #ahora la nueva distancia va a ser = a la suma de la distancia actual + la distancia de la arista del nodo adyacente
-                    distancia_actual = distancia[inicio] + grafo[inicio][nodoAdyacente]
-
-                    if distancia_actual < distancia.get(nodoAdyacente, float('inf')):
-                        distancia[nodoAdyacente] = distancia_actual
-                        nodoAnterior[nodoAdyacente] = inicio
-
-            nodosVisitados.append(inicio)
-            nodos_no_visitados = {}
-
-            for nodo in grafo:
-                if nodo not in nodosVisitados:
-                    nodos_no_visitados[nodo] = distancia.get(nodo, float('inf'))
-
-            punto_auxiliar = min(nodos_no_visitados, key=nodos_no_visitados.get)
-            #se ejecuta el metodo recursivamente. Ahora recine como parametro el proximo nodo que no ha sido visitado y
-            #con la menor distancia
-            return dijkstra(grafo, punto_auxiliar, destino, nodosVisitados, distancia, nodoAnterior)
-
-
-@app.route('/')
-def index():
-    #guarda en una variable el resultado del algoritmo
-    ruta_mas_corta = dijkstra(grafo, '20', '25')
-    #se inicializa la lista que guardará el nombre de los puntos que recorre el algoritmo para llegar al destino
+@app.route('/transporte_disponible',methods=['POST'])
+def transporte_disponible():
+    nodosVisitados = []
+    distancia = {}
+    nodoAnterior = {}
     ruta = []
+
+    punto_inicio = request.json["partida"]
+    punto_destino = request.json["destino"]
+
+
+    #guarda en una variable el resultado del algoritmo
+    ruta_mas_corta = algoritmo_dijkstra.dijkstra(algoritmo_dijkstra.grafo,punto_inicio,punto_destino,nodosVisitados, distancia, nodoAnterior)
+
+    #se inicializa la lista que guardará el nombre de los puntos que recorre el algoritmo para llegar al destino
+
+    transporte = datos_transporte.Info_Rutas()
+    transporte_disponible = transporte.habilitaTransporte(punto_inicio,punto_destino)
 
     #por cada punto guardado en el camino de la ruta mas corta
     #busca el id de la ruta en el json "destinos" para encontrar su nombre correspondiente y lo agrega a la lista
     for destino in ruta_mas_corta['Ruta']:
-        ruta.append(destinos[destino])
+        ruta.append(datos_transporte.Info_Rutas.destinos[destino])
 
     #se le da formato el json que se retorna
-    json_ruta=({'Distancia':ruta_mas_corta['Distancia'],'Ruta': (ruta[::-1])})
+    temporal=({'Distancia':ruta_mas_corta['Distancia'],'Ruta': (ruta),'Transporte':transporte_disponible})
+    info_temporal[0] = temporal
+
+    json_ruta = ({'transporte': transporte_disponible})
     resultado = json.dumps(json_ruta)
     respuesta = Response(resultado, status=200, mimetype='application/json')
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+
     return respuesta
 
 #prueba temporal para visualizar el contenido de los arreglos
-@app.route('/grafo', methods=['GET'])
+@app.route('/tarifa', methods=['POST'])
 def ejemplo_1():
-    resultado = json.dumps(grafo)
-    respuesta = Response(resultado, status=200, mimetype='application/json')
+
+    try:
+        transporte_seleccionado = request.json['transporte']
+        punto_inicio = request.json["partida"]
+        punto_destino = request.json["destino"]
+        distancia = float(info_temporal[0]['Distancia'])
+
+
+        if transporte_seleccionado == "Taxi":
+
+            duracion = datos_viaje.Datos_Duracion()
+            duracion_estimada = duracion.duracionTaxi(distancia)
+
+            tarifa = datos_viaje.Datos_Tarifas()
+            tarifa_total = tarifa.TarifaTaxi(distancia)
+
+            json_ruta = ({'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Taxi",'Duracion':duracion_estimada,'Tarifa':tarifa_total})
+            resultado = json.dumps(json_ruta)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
+
+        if transporte_seleccionado == "Bus":
+            ejecutar_db = mongo.db.transporte_buses
+            buses = []
+
+            pasaje = datos_viaje.Datos_Tarifas()
+            pasaje_total = pasaje.TarifaBus(punto_inicio,punto_destino,distancia)
+
+            duracion = datos_viaje.Datos_Duracion()
+            duracion_estimada = duracion.duracionBus(distancia)
+
+            for bus in ejecutar_db.find():
+                buses.append(
+                    {"compania": bus["compania"], "conductor": bus["conductor"], "capacidad": bus["capacidad"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
+
+
+            json_ruta = (
+            {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Bus",
+             'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Buses_disponibles':buses})
+            resultado = json.dumps(json_ruta)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
+
+        if transporte_seleccionado == "Tren":
+
+            print()
+
+        if transporte_seleccionado == "Avion":
+            distancia_avion = distancia * 0.40
+            distancia_total = int(distancia - distancia_avion)
+
+
+            duracion = datos_viaje.Datos_Duracion()
+            duracion_estimada = duracion.duracionAvion(distancia_total)
+
+            tarifa = datos_viaje.Datos_Tarifas()
+            tarifa_total = tarifa.TarifaAvion(distancia_total)
+
+            json_ruta = (
+            {'Distancia': distancia_total, 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Avion",
+             'Duracion': duracion_estimada, 'Tarifa': tarifa_total})
+            resultado = json.dumps(json_ruta)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
+
+    except(KeyError):
+        #si no se a ejecutado "/elegir_ruta " devuelva el siguiente msj de error
+        resultado = json.dumps({'Error':'Ruta no seleccionada'})
+        error = Response(resultado, status=200, mimetype='application/json')
+        error.headers['Access-Control-Allow-Origin'] = "*"
+        return error
+
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
     return respuesta
 
 
