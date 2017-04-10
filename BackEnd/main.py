@@ -1,9 +1,12 @@
-from flask import Flask, json, Response, request,jsonify
+import bcrypt
+from flask import Flask, json, Response, request, session
 from flask_pymongo import PyMongo
+from Datos import viaje_datos as datos_viaje, transporte_datos as datos_transporte, algoritmo_dijkstra
 
-from BackEnd.Datos import transporte_datos as datos_transporte, algoritmo_dijkstra, viaje_datos as datos_viaje
 
 app = Flask(__name__)
+app.secret_key='my_secret_key'
+
 
 #conexión a la base de datos
 app.config['MONGO_DBNAME'] = 'tribot'
@@ -14,11 +17,45 @@ mongo = PyMongo(app)
 #guarda la consulta más reciente de una ruta
 info_temporal = {}
 
-@app.route('/user',methods=['GET'])
-def user():
-    user = mongo.db.users
-    user.insert({'name':'John'})
-    return 'agregado'
+@app.route('/registrar',methods=['POST','GET'])
+def registrar():
+    users = mongo.db.users
+
+    if request.method == 'POST':
+        nombre = request.json["nombre"]
+        apellido = request.json["apellido"]
+        usuario = request.json["usuario"]
+        contrasena = request.json["contrasena"]
+
+        users = mongo.db.users
+
+        usuario_existente = users.find_one({"usuario": usuario})
+
+        if usuario_existente is None:
+            hashpass = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
+            users.insert({'nombre':nombre,'apellido':apellido,'usuario':usuario,'contrasena':hashpass})
+            session['usuario'] = usuario
+            return "Te has registrado correctamente " + session['usuario']
+
+        return 'El usuario ya existe!'
+
+
+    return 'Redireccionar a registro'
+
+@app.route('/login',methods=['POST'])
+def login():
+    users = mongo.db.users
+    usuario = request.json["usuario"]
+    contrasena = request.json["contrasena"]
+
+    login_user = users.find_one({'usuario':usuario})
+
+    if login_user:
+        if bcrypt.hashpw(contrasena.encode('utf-8'), login_user['contrasena']) == login_user['contrasena']:
+            session['usuario'] = usuario
+            return "Te has logeado como " + session['usuario']
+
+    return 'Usuario y/o contraseña incorrectos'
 
 @app.route('/destinos',methods=['GET'])
 def destinos():
@@ -40,7 +77,7 @@ def transporte_disponible():
 
 
     #guarda en una variable el resultado del algoritmo
-    ruta_mas_corta = algoritmo_dijkstra.dijkstra(algoritmo_dijkstra.grafo,punto_inicio,punto_destino,nodosVisitados, distancia, nodoAnterior)
+    ruta_mas_corta = algoritmo_dijkstra.dijkstra(algoritmo_dijkstra.grafo, punto_inicio, punto_destino, nodosVisitados, distancia, nodoAnterior)
 
     #se inicializa la lista que guardará el nombre de los puntos que recorre el algoritmo para llegar al destino
 
@@ -63,9 +100,8 @@ def transporte_disponible():
 
     return respuesta
 
-#prueba temporal para visualizar el contenido de los arreglos
 @app.route('/tarifa', methods=['POST'])
-def ejemplo_1():
+def tarifa():
 
     try:
         transporte_seleccionado = request.json['transporte']
