@@ -1,7 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import 'rxjs/Rx';
+
+import {AppService} from './app.service';
 
 import {Punto} from './punto'
-import {PUNTOS} from './mock-puntos'
 
 @Component({
   selector: 'desde',
@@ -10,29 +12,32 @@ import {PUNTOS} from './mock-puntos'
 })
 
 export class DesdeComponent {
-  clickMessage = '';
+  public puntos;
 
-  onClickMe() {
-    this.clickMessage = 'You are my hero!';
+  @Input()
+  puntoin: string = 'yep';
+
+  @Output('cambio')
+  change: EventEmitter<string> = new EventEmitter<string>();
+
+
+  constructor(private _appService: AppService){
   }
-  
-  puntos = PUNTOS;
+
+  profile = {};
+
+ ngOnInit(){
+   this.loadUser();
+ }
+
+  loadUser() {
+    this._appService.getPuntos().subscribe(data => this.profile = data);
+  }
 
   selectedPunto: Punto;
 
-  model = new Punto(4, 'Escazú', {tren: false, taxi: true, avion: false, bus: false});
-
-
-  onSelect(punto: Punto): void{
-    this.selectedPunto = punto;
-  }
-
-  submitted = false;
-
-  onSubmit() { this.submitted = true; }
-
-  get diagnostic() {
-    return JSON.stringify(this.model);
-  }
+  onSubmit(){
+    this.change.emit(this.puntoin);
+   }
 
 }

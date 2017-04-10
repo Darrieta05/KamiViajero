@@ -1,16 +1,35 @@
-<div class="container">
+<div id="maincontainer" class="container">
   <div class="row">
+    <nav>
+
+    </nav>
     <div class="headerimg">
+      <h1 class="jumbo">
+        {{title}}
+      </h1>
+      <h3>
+        {{desc}}
+      </h3>
+      <p>
+        {{desc2}}
+      </p>
     </div>
-    <h1>
-      {{title}}
-    </h1>
-    <h3>
-      {{desc}}
-    </h3>
-    <p>
-      {{desc2}}
-    </p>
+  </div>
+  <div class="row">
+    <div class="col col-md-4">
+      <desde [puntoin]="puntoPartida" (cambio)="cambiaPartida($event)"></desde>
+    </div>
+    <div *ngIf="puntoPartida" class="col col-md-4">
+      <hasta [puntoout]="puntoDestino" (cambio)="cambiaDestino($event)"></hasta>
+    </div>
+    <div *ngIf="puntoDestino" class="col col-md-4">
+      <p>
+        El punto de partida es: {{puntoPartida}}
+      </p>
+      <p>
+        El punto de destino es: {{puntoDestino}}
+      </p>
+      <button (click)="checkTransporte()" type="button" name="button">Buscar Transporte Disponible</button>
+    </div>
   </div>
 </div>
-<router-outlet></router-outlet>

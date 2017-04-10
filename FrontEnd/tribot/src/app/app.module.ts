@@ -8,12 +8,19 @@ import {AppRoutingModule} from './app-routing.module';
 import { AppComponent } from './app.component';
 import {DesdeComponent} from './desde.component'
 import {HastaComponent} from './hasta.component'
+import {AppService} from './app.service';
+import {PageNotFoundComponent} from './not-found.component';
+import {LogInComponent} from './login.component';
+import {RegisterComponent} from './register.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DesdeComponent,
-    HastaComponent
+    HastaComponent,
+    PageNotFoundComponent,
+    LogInComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -21,7 +28,7 @@ import {HastaComponent} from './hasta.component'
     HttpModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [AppService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
