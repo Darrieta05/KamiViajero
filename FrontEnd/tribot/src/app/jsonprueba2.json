@@ -1,0 +1,37 @@
+/*envio de puntos*/
+{
+  "puntos": [
+    "4",
+    "7"
+  ]
+}
+
+/*recibo de transportes disponibles*/
+{
+  "transporte": [
+    "taxi",
+    "avion"
+  ]
+}
+
+
+/*le envio el transporte que elije*/
+{
+  "transporte": "taxi",
+  "partida": "2",
+  "destino": "4"
+}
+
+/*al momento de pedir todos los detalles*/
+{
+  "partida": "Pavas",
+  "destino": "Punta Cana",
+  "tranporte": "taxi ",
+  "tiempo": "30minutos",
+  "pasos": [
+    "nombre1",
+    "nombre2",
+    "nombre3",
+    "nombre4",
+  ]
+}

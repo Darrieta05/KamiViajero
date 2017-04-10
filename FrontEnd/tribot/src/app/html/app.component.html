@@ -1,8 +1,5 @@
 <div id="maincontainer" class="container">
   <div class="row">
-    <nav>
-
-    </nav>
     <div class="headerimg">
       <h1 class="jumbo">
         {{title}}
@@ -14,7 +11,9 @@
         {{desc2}}
       </p>
     </div>
+    <alert></alert>
   </div>
+  <router-outlet></router-outlet>
   <div class="row">
     <div class="col col-md-4">
       <desde [puntoin]="puntoPartida" (cambio)="cambiaPartida($event)"></desde>
@@ -29,7 +28,16 @@
       <p>
         El punto de destino es: {{puntoDestino}}
       </p>
-      <button (click)="checkTransporte()" type="button" name="button">Buscar Transporte Disponible</button>
+      <button class="btn btn-primary" (click)="checkTransporte()" type="button" name="button">Buscar Transporte Disponible</button>
     </div>
   </div>
+  <div class="row">
+    <transporte ></transporte>
+  </div>
+  <div class="row">
+    <detalles></detalles>
+  </div>
+  <a href="https://www.linkedin.com/in/darrieta05/">Daniel Arrieta</a>
+   -
+  <a href="https://www.linkedin.com/in/johnn-brown/">John Brown</a>
 </div>

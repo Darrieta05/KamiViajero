@@ -33,7 +33,7 @@ export class AppComponent {
 
   checkTransporte(){
     console.log("Busca Transporte")
-    this._appService.sendPuntos([this.puntoPartida, this.puntoDestino])
+    this._appService.sendPuntos(this.puntoPartida, this.puntoDestino)
     .subscribe(data => this.ruta = data);
   }
 }

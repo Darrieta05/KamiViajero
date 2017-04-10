@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http, Response, Headers, RequestOptions} from "@angular/http";
 import 'rxjs/Rx';
-import {Punto} from './punto'
 
 @Injectable()
 export class AppService {
@@ -14,23 +13,28 @@ export class AppService {
   }
 
   getPuntos() {
-    return this.http.get('http://swapi.co/api/people/1')
+    // return this.http.get('http://swapi.co/api/people/1')
+    return this.http.get('http://0.0.0.0:8000/grafo')
     .map((res:Response) => res.json());
   }
 
-  getLista(): Promise<Punto[]> {
-    return this.http.get('http://127.0.0.1:5000/')
-      .toPromise()
-      .then(response => response.json().data as Punto[])
-      .catch(this.handleError);
+  sendPuntos(partida, destino) {
+    var headers = new Headers({'Content-Type': 'application/json'});
+
+    let options = new RequestOptions({headers: headers});
+    let body = JSON.stringify({"partida": partida, "destino": destino});
+    console.log(body)
+
+    return this.http.post('http://0.0.0.0:8000/manda', body, {headers: headers}).map((res:Response) => res.json());
   }
 
-  sendPuntos(puntos: Punto[]) {
+  sendTransporte(transporte, partida, destino){
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify(puntos);
+    let body = JSON.stringify({"transporte": transporte, "partida": partida, "destino": destino});
+    console.log(body)
 
-    return this.http.post('http/127.0.0.1:5000/inserta', body, headers).map((res:Response) => res.json());
+    return this.http.post('http://0.0.0.0:8000/trans', body, options).map((res:Response) => res.json());
   }
 
 }

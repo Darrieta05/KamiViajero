@@ -3,6 +3,7 @@ import 'rxjs/Rx';
 
 import {AppService} from './app.service';
 
+
 import {Punto} from './punto'
 
 @Component({
@@ -12,29 +13,24 @@ import {Punto} from './punto'
 })
 
 export class DesdeComponent {
-  public puntos;
 
   @Input()
-  puntoin: string = 'yep';
+  puntoin: Object;
 
   @Output('cambio')
-  change: EventEmitter<string> = new EventEmitter<string>();
+  change: EventEmitter<Object> = new EventEmitter<Object>();
 
+  constructor(private _appService: AppService){}
 
-  constructor(private _appService: AppService){
-  }
-
-  profile = {};
+  datos = {};
 
  ngOnInit(){
    this.loadUser();
  }
 
   loadUser() {
-    this._appService.getPuntos().subscribe(data => this.profile = data);
+    this._appService.getPuntos().subscribe(data => this.datos = data);
   }
-
-  selectedPunto: Punto;
 
   onSubmit(){
     this.change.emit(this.puntoin);
