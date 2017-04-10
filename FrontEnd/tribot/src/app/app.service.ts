@@ -14,7 +14,7 @@ export class AppService {
 
   getPuntos() {
     // return this.http.get('http://swapi.co/api/people/1')
-    return this.http.get('http://0.0.0.0:8000/grafo')
+    return this.http.get('http://0.0.0.0:8000/destinos')
     .map((res:Response) => res.json());
   }
 

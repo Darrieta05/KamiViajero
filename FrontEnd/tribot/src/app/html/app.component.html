@@ -14,6 +14,7 @@
     <alert></alert>
   </div>
   <router-outlet></router-outlet>
+
   <div class="row">
     <div class="col col-md-4">
       <desde [puntoin]="puntoPartida" (cambio)="cambiaPartida($event)"></desde>
@@ -32,7 +33,7 @@
     </div>
   </div>
   <div class="row">
-    <transporte ></transporte>
+    <transporte></transporte>
   </div>
   <div class="row">
     <detalles></detalles>
