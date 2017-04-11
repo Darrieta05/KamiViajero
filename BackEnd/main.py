@@ -1,3 +1,5 @@
+# -*- coding=UTF-8 -*-
+
 import bcrypt
 import os
 from flask import Flask, json, Response, request, session

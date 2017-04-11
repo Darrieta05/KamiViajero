@@ -1,4 +1,24 @@
-<div *ngIf="tlist?.avion" class="col col-lg-4"><img src="../media/plane.png" alt="Avión" class="iconotransporte"></div>
-<div *ngIf="tlist?.tren" class="col col-lg-4"><img src="../media/taxi.png" alt="Tren" class="iconotransporte"></div>
-<div *ngIf="tlist?.bus" class="col col-lg-4"><img src="../media/train.png" alt="Bus" class="iconotransporte"></div>
-<div *ngIf="tlist?.taxi" class="col col-lg-4"><img src="../media/bus.png" alt="Taxi" class="iconotransporte"></div>
+  <div  class="col col-md-3">
+    <img src="src/app/media/plane.png" alt="Avión" class="iconotransporte">
+  </div>
+  <div  class="col col-md-3">
+    <img src="src/app/media/taxi.png" alt="Tren" class="iconotransporte">
+  </div>
+  <div  class="col col-md-3">
+    <img src="src/app/media/train.png" alt="Bus" class="iconotransporte">
+  </div>
+  <div  class="col col-md-3">
+    <img src="src/app/media/bus.svg" alt="Taxi" class="iconotransporte">
+  </div>
+
+  <div class="row desde">
+    <div class="form-group formulario col-md-6">
+      <label for="puntoin">Transporte</label>
+      <select (change)="onSubmit()" class="form-control" id="puntodesde" required [(ngModel)]="puntoin" name="puntoin">
+        <option>avion</option>
+        <option>taxi</option>
+        <option >tren</option>
+        <option>bus</option>
+      </select>
+    </div>
+  </div>
