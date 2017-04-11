@@ -1,14 +1,13 @@
 import bcrypt
-from flask import Flask, json, Response, request, session,g
+import os
+from flask import Flask, json, Response, request, session
 from flask_pymongo import PyMongo
-from flask_httpauth import HTTPBasicAuth
-
+from functools import wraps
 from Datos import viaje_datos as datos_viaje, transporte_datos as datos_transporte, algoritmo_dijkstra
 
-auth = HTTPBasicAuth()
 
 app = Flask(__name__)
-app.secret_key='my_secret_key'
+app.secret_key= os.urandom(24)
 
 
 #conexión a la base de datos
@@ -45,8 +44,17 @@ def registrar():
 
     return 'Redireccionar a registro'
 
+#este metodo se utiliza como wrapper para las rutas que necesitan authentication
+def login_required(test):
+    @wraps(test)
+    def wrap(*args, **kwargs):
+        if 'usuario' in session:
+            return test(*args, **kwargs)
+        else:
+            return 'Es necesario iniciar sesion'
+    return wrap
+
 @app.route('/login',methods=['POST'])
-@auth.verify_password
 def login():
     users = mongo.db.users
     usuario = request.json["usuario"]
@@ -57,15 +65,19 @@ def login():
     if login_user:
         if bcrypt.hashpw(contrasena.encode('utf-8'), login_user['contrasena']) == login_user['contrasena']:
             session['usuario'] = usuario
-            g.user = usuario
-            logged = True
-            return logged
-           # "Te has logeado como " + session['usuario']
-        nolog = False
-    return nolog
+
+            return "Te has logeado " + session['usuario']
+
+    return 'Usuario y/o contraseña incorrectos'
+
+@app.route('/logout')
+def logout():
+    session.pop('usuario',None)
+    return "Has cerrado sesion"
+
 
 @app.route('/destinos',methods=['GET'])
-@auth.login_required
+@login_required
 def destinos():
 
     resultado = json.dumps(datos_transporte.Info_Rutas.destinos)
@@ -74,6 +86,7 @@ def destinos():
     return respuesta
 
 @app.route('/transporte_disponible',methods=['POST'])
+@login_required
 def transporte_disponible():
     nodosVisitados = []
     distancia = {}
@@ -109,6 +122,7 @@ def transporte_disponible():
     return respuesta
 
 @app.route('/tarifa', methods=['POST'])
+@login_required
 def tarifa():
 
     try:
