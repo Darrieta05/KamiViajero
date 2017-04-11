@@ -1,3 +1,5 @@
+# -*- coding=UTF-8 -*-
+
 import bcrypt
 from flask import Flask, json, Response, request, session,g
 from flask_pymongo import PyMongo
