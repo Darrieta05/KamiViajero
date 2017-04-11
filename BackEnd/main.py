@@ -1,8 +1,11 @@
 import bcrypt
-from flask import Flask, json, Response, request, session
+from flask import Flask, json, Response, request, session,g
 from flask_pymongo import PyMongo
+from flask_httpauth import HTTPBasicAuth
+
 from Datos import viaje_datos as datos_viaje, transporte_datos as datos_transporte, algoritmo_dijkstra
 
+auth = HTTPBasicAuth()
 
 app = Flask(__name__)
 app.secret_key='my_secret_key'
@@ -43,6 +46,7 @@ def registrar():
     return 'Redireccionar a registro'
 
 @app.route('/login',methods=['POST'])
+@auth.verify_password
 def login():
     users = mongo.db.users
     usuario = request.json["usuario"]
@@ -53,11 +57,15 @@ def login():
     if login_user:
         if bcrypt.hashpw(contrasena.encode('utf-8'), login_user['contrasena']) == login_user['contrasena']:
             session['usuario'] = usuario
-            return "Te has logeado como " + session['usuario']
-
-    return 'Usuario y/o contraseña incorrectos'
+            g.user = usuario
+            logged = True
+            return logged
+           # "Te has logeado como " + session['usuario']
+        nolog = False
+    return nolog
 
 @app.route('/destinos',methods=['GET'])
+@auth.login_required
 def destinos():
 
     resultado = json.dumps(datos_transporte.Info_Rutas.destinos)
@@ -72,7 +80,7 @@ def transporte_disponible():
     nodoAnterior = {}
     ruta = []
 
-    punto_inicio = request.json["partida"]
+    punto_inicio = request.json["inicio"]
     punto_destino = request.json["destino"]
 
 
@@ -105,7 +113,7 @@ def tarifa():
 
     try:
         transporte_seleccionado = request.json['transporte']
-        punto_inicio = request.json["partida"]
+        punto_inicio = request.json["inicio"]
         punto_destino = request.json["destino"]
         distancia = float(info_temporal[0]['Distancia'])
 
@@ -127,16 +135,20 @@ def tarifa():
             buses = []
 
             pasaje = datos_viaje.Datos_Tarifas()
-            pasaje_total = pasaje.TarifaBus(punto_inicio,punto_destino,distancia)
+            pasaje_total = pasaje.TarifaBus(punto_inicio,punto_destino)
 
             duracion = datos_viaje.Datos_Duracion()
             duracion_estimada = duracion.duracionBus(distancia)
 
-            for bus in ejecutar_db.find():
+            for bus in ejecutar_db.find({'ruta': {'inicio': '8','destino': '24'}}):
                 buses.append(
-                    {"compania": bus["compania"], "conductor": bus["conductor"], "capacidad": bus["capacidad"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
+                    {"compania": bus["compania"], "conductor": bus["conductor"], "espacios": bus["espacios"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
+
+            #bus = ejecutar_db.find({'capacidad': 25})
 
 
+
+            #print(bus)
             json_ruta = (
             {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Bus",
              'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Buses_disponibles':buses})
@@ -145,7 +157,28 @@ def tarifa():
 
         if transporte_seleccionado == "Tren":
 
-            print()
+            ejecutar_db = mongo.db.transporte_tren
+            tren = []
+
+            pasaje = datos_viaje.Datos_Tarifas()
+            pasaje_total = pasaje.TarifaTren(punto_inicio,punto_destino)
+
+            duracion = datos_viaje.Datos_Duracion()
+            duracion_estimada = duracion.duracionTren(distancia)
+
+            for bus in ejecutar_db.find({'ruta': {'inicio': "1",'destino': "2"}}):
+                tren.append(
+                    {"compania": bus["compania"], "conductor": bus["conductor"], "capacidad": bus["capacidad"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
+
+
+
+
+            #print(bus)
+            json_ruta = (
+            {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Bus",
+             'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Buses_disponibles':tren})
+            resultado = json.dumps(json_ruta)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
 
         if transporte_seleccionado == "Avion":
             distancia_avion = distancia * 0.40
