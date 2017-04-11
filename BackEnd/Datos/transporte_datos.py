@@ -4,18 +4,17 @@ class Info_Rutas:
 
 
 
-    #avion = 1,25, 23, 24, 22, 26, 7, 15
-    #tren = 24, 15, 12, 11
+    #avion = 23, 24, 22, 26
     #bus = 8,9,18,24
     #tren = 24,15, 10
 
-    transportes = {  '1': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
+    transportes = {  '1': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '2': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '3': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '4': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '5': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '6': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
-                    '7': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
+                    '7': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '8': [{'Taxi':True,'Bus':True,'Tren':False,'Avion':False}],
                     '9': [{'Taxi':True,'Bus':True,'Tren':False,'Avion':False}],
                     '10': [{'Taxi':True,'Bus':False,'Tren':True,'Avion':False}],
@@ -23,7 +22,7 @@ class Info_Rutas:
                     '12': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '13': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '14': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
-                    '15': [{'Taxi':True,'Bus':False,'Tren':True,'Avion':True}],
+                    '15': [{'Taxi':True,'Bus':False,'Tren':True,'Avion':False}],
                     '16': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '17': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '18': [{'Taxi':True,'Bus':True,'Tren':False,'Avion':False}],
@@ -33,7 +32,7 @@ class Info_Rutas:
                     '22': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
                     '23': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
                     '24': [{'Taxi':True,'Bus':True,'Tren':True,'Avion':True}],
-                    '25': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
+                    '25': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':False}],
                     '26': [{'Taxi':True,'Bus':False,'Tren':False,'Avion':True}],
                 }
     #id y nombre del destino (nodos del grafo)

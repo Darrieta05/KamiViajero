@@ -32,15 +32,15 @@ class Datos_Tarifas:
 
         pasaje = int(0)
         # bus = 8,9,18,24
-        if (inicio == '8' and destino == '9') or (inicio == '9' and destino == '8'):
+        if (inicio == '8' and destino == '9') or (inicio == '9' and destino == '8'):#
             pasaje = int(2750)
-        if (inicio == '8' and destino == '18') or (inicio == '18' and destino == '8'):
+        if (inicio == '8' and destino == '18') or (inicio == '18' and destino == '8'):#
             pasaje = int(4500)
-        if (inicio == '8' and destino == '24') or (inicio == '24' and destino == '8'):
+        if (inicio == '8' and destino == '24') or (inicio == '24' and destino == '8'):#
             pasaje = int(3000)
-        if (inicio == '9' and destino == '18') or (inicio == '18' and destino == '9'):
+        if (inicio == '9' and destino == '18') or (inicio == '18' and destino == '9'): #
             pasaje = int(2950)
-        if (inicio == '9' and destino == '24') or (inicio == '24' and destino == '9'):
+        if (inicio == '9' and destino == '24') or (inicio == '24' and destino == '9'):#
             pasaje = int(4375)
         if (inicio == '24' and destino == '18') or (inicio == '18' and destino == '24'):
             pasaje = int(2400)
@@ -70,7 +70,7 @@ class Datos_Tarifas:
             pasaje = int(3800)
         if (inicio == '15' and destino == '10') or (inicio == '10' and destino == '15'):
             pasaje = int(4675)
-        return
+        return pasaje
 
 
 
@@ -131,3 +131,4 @@ class Datos_Duracion:
         duracion_estimada = str("%d:%02d" % (horas, minutos))
 
         return duracion_estimada
+

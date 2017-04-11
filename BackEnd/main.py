@@ -1,5 +1,4 @@
 # -*- coding=UTF-8 -*-
-
 import bcrypt
 import os
 from flask import Flask, json, Response, request, session
@@ -18,6 +17,24 @@ app.config['MONGO_URI'] = 'mongodb://tribot:tribot@ds157390.mlab.com:57390/tribo
 
 mongo = PyMongo(app)
 
+#-------inicio bloque de manejo de errores-------
+@app.errorhandler(405)
+def handle_bad_server(e):
+    return 'Intenta cambiando de metodo o revisa bien los parametros'
+
+@app.errorhandler(500)
+def handle_bad_server(e):
+    return 'Servidor incorrecto'
+
+@app.errorhandler(404)
+def handle_bad_request(e):
+    return 'No se encuentra'
+
+@app.errorhandler(400)
+def handle_bad_request(e):
+    return 'Solicitud incorrecta'
+#-------fin bloque de manejo de errores----------
+
 #guarda la consulta más reciente de una ruta
 info_temporal = {}
 
@@ -29,19 +46,29 @@ def registrar():
         nombre = request.json["nombre"]
         apellido = request.json["apellido"]
         usuario = request.json["usuario"]
-        contrasena = request.json["contrasena"]
+        password = request.json["password"]
 
         users = mongo.db.users
 
         usuario_existente = users.find_one({"usuario": usuario})
 
         if usuario_existente is None:
-            hashpass = bcrypt.hashpw(contrasena.encode('utf-8'), bcrypt.gensalt())
-            users.insert({'nombre':nombre,'apellido':apellido,'usuario':usuario,'contrasena':hashpass})
-            session['usuario'] = usuario
-            return "Te has registrado correctamente " + session['usuario']
+            hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            users.insert({'nombre':nombre,'apellido':apellido,'usuario':usuario,'password':hashpass})
 
-        return 'El usuario ya existe!'
+            session['usuario'] = usuario
+
+            json_registrar = ({'usuario': session['usuario']})
+            resultado = json.dumps(json_registrar)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
+            respuesta.headers['Access-Control-Allow-Origin'] = "*"
+            return respuesta
+
+        json_registrar = ({'error': 'El usuario ya existe!'})
+        resultado = json.dumps(json_registrar)
+        respuesta = Response(resultado, status=200, mimetype='application/json')
+        respuesta.headers['Access-Control-Allow-Origin'] = "*"
+        return respuesta
 
 
     return 'Redireccionar a registro'
@@ -60,22 +87,36 @@ def login_required(test):
 def login():
     users = mongo.db.users
     usuario = request.json["usuario"]
-    contrasena = request.json["contrasena"]
+    password = request.json["password"]
 
     login_user = users.find_one({'usuario':usuario})
 
     if login_user:
-        if bcrypt.hashpw(contrasena.encode('utf-8'), login_user['contrasena']) == login_user['contrasena']:
+        if bcrypt.hashpw(password.encode('utf-8'), login_user['password']) == login_user['password']:
             session['usuario'] = usuario
 
-            return "Te has logeado " + session['usuario']
+            json_login = ({'usuario': session['usuario']})
+            resultado = json.dumps(json_login)
+            respuesta = Response(resultado, status=200, mimetype='application/json')
+            respuesta.headers['Access-Control-Allow-Origin'] = "*"
 
-    return 'Usuario y/o contraseña incorrectos'
+            return respuesta
+
+    json_login = ({'error': 'Usuario y/o contraseña incorrectos'})
+    resultado = json.dumps(json_login)
+    respuesta = Response(resultado, status=200, mimetype='application/json')
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+    return respuesta
 
 @app.route('/logout')
 def logout():
     session.pop('usuario',None)
-    return "Has cerrado sesion"
+
+    json_logout = ({'logout': 'Has cerrado sesion'})
+    resultado = json.dumps(json_logout)
+    respuesta = Response(resultado, status=200, mimetype='application/json')
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+    return respuesta
 
 
 @app.route('/destinos',methods=['GET'])
@@ -142,13 +183,24 @@ def tarifa():
             tarifa = datos_viaje.Datos_Tarifas()
             tarifa_total = tarifa.TarifaTaxi(distancia)
 
-            json_ruta = ({'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Taxi",'Duracion':duracion_estimada,'Tarifa':tarifa_total})
+            ejecutar_db = mongo.db.transporte_taxis
+            taxis = []
+
+            duracion = datos_viaje.Datos_Duracion()
+            duracion_estimada = duracion.duracionBus(distancia)
+
+            for taxi in ejecutar_db.find({'compania': "Taxis TriBot"}):
+                taxis.append(
+                    {"compania": taxi["compania"], "conductor": taxi["conductor"], "id_conductor": taxi["id_conductor"],
+                     "placa": taxi["placa"], "contacto": taxi["contacto"],"precio_kilometro": taxi["precio_kilometro"],"tarifa_base": taxi["tarifa_base"]})
+
+            json_ruta = (
+                {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Taxi",
+                 'Duracion': duracion_estimada, 'Tarifa':tarifa_total, 'Taxis_disponibles': taxis})
             resultado = json.dumps(json_ruta)
             respuesta = Response(resultado, status=200, mimetype='application/json')
 
         if transporte_seleccionado == "Bus":
-            ejecutar_db = mongo.db.transporte_buses
-            buses = []
 
             pasaje = datos_viaje.Datos_Tarifas()
             pasaje_total = pasaje.TarifaBus(punto_inicio,punto_destino)
@@ -156,15 +208,12 @@ def tarifa():
             duracion = datos_viaje.Datos_Duracion()
             duracion_estimada = duracion.duracionBus(distancia)
 
-            for bus in ejecutar_db.find({'ruta': {'inicio': '8','destino': '24'}}):
+            ejecutar_db = mongo.db.transporte_buses
+            buses = []
+            for bus in ejecutar_db.find({'ruta': {'inicio': punto_inicio,'destino': punto_destino}}):
                 buses.append(
                     {"compania": bus["compania"], "conductor": bus["conductor"], "espacios": bus["espacios"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
 
-            #bus = ejecutar_db.find({'capacidad': 25})
-
-
-
-            #print(bus)
             json_ruta = (
             {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Bus",
              'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Buses_disponibles':buses})
@@ -173,26 +222,22 @@ def tarifa():
 
         if transporte_seleccionado == "Tren":
 
-            ejecutar_db = mongo.db.transporte_tren
-            tren = []
-
             pasaje = datos_viaje.Datos_Tarifas()
             pasaje_total = pasaje.TarifaTren(punto_inicio,punto_destino)
 
             duracion = datos_viaje.Datos_Duracion()
             duracion_estimada = duracion.duracionTren(distancia)
 
-            for bus in ejecutar_db.find({'ruta': {'inicio': "1",'destino': "2"}}):
-                tren.append(
-                    {"compania": bus["compania"], "conductor": bus["conductor"], "capacidad": bus["capacidad"],"horarios": bus["horarios"],"contacto": bus["contacto"] })
+            ejecutar_db = mongo.db.transporte_tren
+            trenes = []
 
+            for tren in ejecutar_db.find({'ruta': {'inicio': punto_inicio,'destino': punto_destino}}):
+                trenes.append(
+                    {"compania": tren["compania"], "Horario": tren["Horario"],"contacto": tren["contacto"] })
 
-
-
-            #print(bus)
             json_ruta = (
-            {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Bus",
-             'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Buses_disponibles':tren})
+            {'Distancia': info_temporal[0]['Distancia'], 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Tren",
+             'Duracion': duracion_estimada, 'Pasaje': pasaje_total,'Tren_disponible':trenes})
             resultado = json.dumps(json_ruta)
             respuesta = Response(resultado, status=200, mimetype='application/json')
 
@@ -207,11 +252,20 @@ def tarifa():
             tarifa = datos_viaje.Datos_Tarifas()
             tarifa_total = tarifa.TarifaAvion(distancia_total)
 
+            ejecutar_db = mongo.db.transporte_avion
+            aviones = []
+
+            for avion in ejecutar_db.find({'ruta': {'inicio': punto_inicio, 'destino': punto_destino}}):
+                aviones.append(
+                    {"compania": avion["compania"], "Pasajeros": avion["Pasajeros"], "Horario": avion["Horario"],
+                     "contacto": avion["contacto"]})
+
             json_ruta = (
-            {'Distancia': distancia_total, 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Avion",
-             'Duracion': duracion_estimada, 'Tarifa': tarifa_total})
+                {'Distancia': distancia_total, 'Ruta': (info_temporal[0]['Ruta']), 'Transporte': "Avion",
+                 'Duracion': duracion_estimada, 'Pasaje': tarifa_total, 'Vuelos_disponibles': aviones})
             resultado = json.dumps(json_ruta)
             respuesta = Response(resultado, status=200, mimetype='application/json')
+
 
     except(KeyError):
         #si no se a ejecutado "/elegir_ruta " devuelva el siguiente msj de error
@@ -223,6 +277,21 @@ def tarifa():
     respuesta.headers['Access-Control-Allow-Origin'] = "*"
     return respuesta
 
+@app.route('/ranking', methods=['GET'])
+@login_required
+def ranking():
+    ranking = []
+    ejecutar_db = mongo.db.ranking
+
+    for i in ejecutar_db.find():
+        ranking.append({"ranking": i["rutas"]})
+
+    json_ruta = ({'Top_5': ranking})
+    resultado = json.dumps(json_ruta)
+    respuesta = Response(resultado, status=200, mimetype='application/json')
+    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+
+    return respuesta
 
 
 ## Main
