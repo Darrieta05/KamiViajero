@@ -1,14 +1,16 @@
 # -*- coding=UTF-8 -*-
+
 import bcrypt
 import os
 from flask import Flask, json, Response, request, session
 from flask_pymongo import PyMongo
 from functools import wraps
 from Datos import viaje_datos as datos_viaje, transporte_datos as datos_transporte, algoritmo_dijkstra
-
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 app.secret_key= os.urandom(24)
+CORS(app)
 
 
 #conexión a la base de datos
@@ -120,7 +122,7 @@ def logout():
 
 
 @app.route('/destinos',methods=['GET'])
-@login_required
+# @login_required
 def destinos():
 
     resultado = json.dumps(datos_transporte.Info_Rutas.destinos)
@@ -129,7 +131,7 @@ def destinos():
     return respuesta
 
 @app.route('/transporte_disponible',methods=['POST'])
-@login_required
+# @login_required
 def transporte_disponible():
     nodosVisitados = []
     distancia = {}
@@ -165,7 +167,7 @@ def transporte_disponible():
     return respuesta
 
 @app.route('/tarifa', methods=['POST'])
-@login_required
+# @login_required
 def tarifa():
 
     try:
@@ -273,12 +275,12 @@ def tarifa():
         error = Response(resultado, status=200, mimetype='application/json')
         error.headers['Access-Control-Allow-Origin'] = "*"
         return error
-
-    respuesta.headers['Access-Control-Allow-Origin'] = "*"
+    # 
+    # respuesta.headers['Access-Control-Allow-Origin'] = "*"
     return respuesta
 
 @app.route('/ranking', methods=['GET'])
-@login_required
+# @login_required
 def ranking():
     ranking = []
     ejecutar_db = mongo.db.ranking

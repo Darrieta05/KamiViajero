@@ -1,3 +1,40 @@
+/*envio login*/
+{
+  "usuario": "usuario",
+  "password": "password"
+}
+
+/*confirma login*/
+{
+  "usuario": "nombre de usuario"
+}
+
+/*envio register*/
+{
+  "nombre": "nombre",
+  "apellido": "apellido",
+  "usuario" : "usuario",
+  "password": "password"
+}
+
+/*confirma register*/
+{
+  "usuario": "nombre de usuario"
+}
+
+/*error register*/
+{
+  "error": "descripcion error"
+}
+
+/*5 mejores rutas*/
+{
+  "rutas": [
+    {"partida": "partida","destino": "destino", "transporte": "transporte", "precio": "precio"}
+  ]
+}
+
+
 /*envio de puntos*/
 {
   "puntos": [

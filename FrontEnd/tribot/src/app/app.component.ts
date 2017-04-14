@@ -22,6 +22,9 @@ export class AppComponent {
   puntoPartida;
   puntoDestino;
   ruta;
+  transporte;
+  disponible;
+
 
   cambiaPartida(event){
     this.puntoPartida = event;
@@ -31,9 +34,20 @@ export class AppComponent {
     this.puntoDestino = event;
   }
 
+  cambiaTransporte(event){
+    this.transporte = event;
+  }
+
   checkTransporte(){
     console.log("Busca Transporte")
     this._appService.sendPuntos(this.puntoPartida, this.puntoDestino)
+    .subscribe(data => this.disponible = data);
+  }
+
+  checkRuta(){
+    console.log("Busca Ruta")
+    this._appService.sendTransporte(this.transporte, this.puntoPartida, this.puntoDestino)
     .subscribe(data => this.ruta = data);
+    console.log(this.ruta);
   }
 }

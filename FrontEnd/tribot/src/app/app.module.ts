@@ -25,6 +25,7 @@ import {LoginComponent} from './login.component';
 import {RegisterComponent} from './register.component';
 import {TransporteComponent} from './transporte.component';
 import {DetallesComponent} from './detalles.component';
+import {Top5Component} from './top5.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {DetallesComponent} from './detalles.component';
     AlertComponent,
     HomeComponent,
     TransporteComponent,
-    DetallesComponent
+    DetallesComponent,
+    Top5Component
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,6 @@
-import {Component} from '@angular/core'
+import {Component, Input} from '@angular/core'
+import 'rxjs/Rx';
+
 
 @Component({
   selector: 'detalles',
@@ -7,14 +9,6 @@ import {Component} from '@angular/core'
 })
 
 export class DetallesComponent {
-  puntoPartidaFinal;
-  puntoDestinoFinal;
-  rutas = [];
-  tiempo;
-
-  detallesget;
-
-  
-
-
+  @Input()
+  ruta;
 }

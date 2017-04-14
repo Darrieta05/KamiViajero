@@ -3,9 +3,6 @@ import 'rxjs/Rx';
 
 import {AppService} from './app.service';
 
-
-import {Punto} from './punto'
-
 @Component({
   selector: 'desde',
   templateUrl: './html/desde.component.html',

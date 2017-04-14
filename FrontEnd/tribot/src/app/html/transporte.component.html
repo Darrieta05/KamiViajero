@@ -10,15 +10,11 @@
   <div  class="col col-md-3">
     <img src="src/app/media/bus.svg" alt="Taxi" class="iconotransporte">
   </div>
-
-  <div class="row desde">
+  <div *ngIf="disponible" class="row desde">
     <div class="form-group formulario col-md-6">
-      <label for="puntoin">Transporte</label>
-      <select (change)="onSubmit()" class="form-control" id="puntodesde" required [(ngModel)]="puntoin" name="puntoin">
-        <option>avion</option>
-        <option>taxi</option>
-        <option >tren</option>
-        <option>bus</option>
+      <label for="transporte">Transporte</label>
+      <select (change)="onSubmit()" class="form-control" id="transporte" required [(ngModel)]="transporte" name="transporte">
+        <option *ngFor="let transporte of disponible.transporte" value="{{transporte}}">{{transporte}}</option>
       </select>
     </div>
   </div>

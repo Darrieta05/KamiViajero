@@ -23,22 +23,26 @@
       <hasta [puntoout]="puntoDestino" (cambio)="cambiaDestino($event)"></hasta>
     </div>
     <div *ngIf="puntoDestino" class="col col-md-4">
-      <p>
-        El punto de partida es: {{puntoPartida}}
-      </p>
-      <p>
-        El punto de destino es: {{puntoDestino}}
-      </p>
       <button class="btn btn-primary" (click)="checkTransporte()" type="button" name="button">Buscar Transporte Disponible</button>
     </div>
   </div>
-  <div class="row">
-    <transporte></transporte>
+  <div *ngIf="disponible" class="row">
+    <transporte [disponible]="disponible" (cambio)="cambiaTransporte($event)"></transporte>
+    <div *ngIf="transporte" >
+      <button class="btn btn-primary" (click)="checkRuta()" type="button" name="button">Buscar Ruta Disponible</button>
+    </div>
   </div>
+
   <div class="row">
-    <detalles></detalles>
+    <detalles [ruta]="ruta"></detalles>
   </div>
+  <span></span>
   <a href="https://www.linkedin.com/in/darrieta05/">Daniel Arrieta</a>
    -
   <a href="https://www.linkedin.com/in/johnn-brown/">John Brown</a>
+</div>
+<div class="container top5container">
+  <div class="top5">
+    <top5></top5>
+  </div>
 </div>

@@ -18,23 +18,27 @@ export class AppService {
     .map((res:Response) => res.json());
   }
 
+  getTop5(){
+    return this.http.get('http://0.0.0.0:8000/ranking')
+    .map((res:Response) => res.json());
+  }
+
   sendPuntos(partida, destino) {
     var headers = new Headers({'Content-Type': 'application/json'});
-
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify({"partida": partida, "destino": destino});
+    let body = JSON.stringify({"inicio": partida, "destino": destino});
     console.log(body)
 
-    return this.http.post('http://0.0.0.0:8000/manda', body, {headers: headers}).map((res:Response) => res.json());
+    return this.http.post('http://0.0.0.0:8000/transporte_disponible', body, {headers: headers}).map((res:Response) => res.json());
   }
 
   sendTransporte(transporte, partida, destino){
     let headers = new Headers({'Content-Type': 'application/json'});
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify({"transporte": transporte, "partida": partida, "destino": destino});
+    let body = JSON.stringify({"transporte": transporte, "inicio": partida, "destino": destino});
     console.log(body)
 
-    return this.http.post('http://0.0.0.0:8000/trans', body, options).map((res:Response) => res.json());
+    return this.http.post('http://0.0.0.0:8000/tarifa', body, options).map((res:Response) => res.json());
   }
 
 }

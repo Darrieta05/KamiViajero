@@ -1,4 +1,5 @@
-import {Component} from '@angular/core'
+import {Component, Input, Output, EventEmitter} from '@angular/core'
+import 'rxjs/Rx';
 
 @Component({
    selector: 'transporte',
@@ -7,5 +8,15 @@ import {Component} from '@angular/core'
 })
 
 export class TransporteComponent {
-  jsondetalles = false;
+  transporte;
+
+  @Input()
+  disponible;
+
+  @Output('cambio')
+  change: EventEmitter<any> = new EventEmitter<any>();
+
+  onSubmit(){
+    this.change.emit(this.transporte);
+   }
 }
