@@ -11,7 +11,7 @@ import {AppService} from './app.service';
 export class Top5Component {
   constructor(private _appService: AppService){}
 
-  toprutas;
+  top5rutas;
 
   ngOnInit(){
     this.getTop();
@@ -19,7 +19,7 @@ export class Top5Component {
 
   getTop(){
     console.log("Busca top 5");
-    this._appService.getTop5().subscribe(data => this.toprutas = data);
+    this._appService.getTop5().subscribe(data => this.top5rutas = data);
   }
 
 }
